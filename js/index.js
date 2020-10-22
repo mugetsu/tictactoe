@@ -15,6 +15,8 @@ class TicTacToe {
     this.boardSize
     this.totalMoves // available moves
     this.movesToWin
+    this.indicatorHandler
+    this.playerColors = ['red', 'blue', 'green', 'pink', 'cyan', 'black', 'orange', 'purple']
     this.initGame()
     this.buildBoard()
   }
@@ -70,6 +72,17 @@ TicTacToe.prototype.buildBoard = function () {
   container.classList.add("container")
   container.style.width = `${this.boardSize * 100 + 30}px`
 
+  // Heading tag for title
+  const titleContainer = document.createElement('h1')
+  titleContainer.innerText = this.args.title
+  container.appendChild(titleContainer)
+  
+  // Player indicator text
+  const indicatorContainer = document.createElement('p')
+  indicatorContainer.innerText = `Player ${this.turn}'s turn!`
+  indicatorContainer.id = 'indicator'
+  container.appendChild(indicatorContainer)
+
   // Loop board grids
   for (let x = 0; x < this.boardSize; x++) {
     let row = document.createElement("div")
@@ -79,9 +92,65 @@ TicTacToe.prototype.buildBoard = function () {
       cell.className = "grid"
       cell.id = `${this.args.gridName}_${x}${y}`
       cell.innerText = "+"
+      cell.onclick = ((a, b) => this.toggle.call(this, a, b)).bind(cell, x, y)
       row.appendChild(cell)
     }
     container.appendChild(row)
   }
   body.appendChild(container)
+
+  // Reset button
+  const resetButton = document.createElement("button")
+  const resetText = document.createTextNode("Restart")
+  resetButton.appendChild(resetText)
+  resetButton.className = "reset"
+  resetButton.onclick = (() => this.reset.call(this)).bind(resetButton)
+  container.appendChild(resetButton)
+
+  // Reference indicator
+  this.indicatorHandler = document.getElementById('indicator')
+}
+
+// Toggling grids
+TicTacToe.prototype.toggle = function (x, y) {
+  if (this.turn != 0 && this.playable == true && this.board[x][y] == 0) {
+    this.board[x][y] = this.turn
+    this.currentMoves++
+    this.updateBoard()
+    this.indicatorHandler.innerText = `Player ${this.turn}'s turn!`
+  } else {
+    this.indicatorHandler.innerText = this.playable
+      ? "Already Chosen!"
+      : "Game Done. Restart."
+  }
+}
+
+// Reset game
+TicTacToe.prototype.reset = function () {
+  this.playable = true
+  this.turn = 1
+  this.currentMoves = 0
+  this.indicatorHandler.innerText = `Player ${this.turn}'s turn!`
+  this.initGame()
+  this.updateBoard()
+}
+
+// Update board
+TicTacToe.prototype.updateBoard = function () {
+  let x, y, grid
+  for (x = 0; x < this.boardSize; x++) {
+    for (y = 0; y < this.boardSize; y++) {
+      grid = document.getElementById(`${this.args.gridName}_${x}${y}`)
+      grid.style.background = `linear-gradient(to bottom, ${
+        this.playerColors[this.board[x][y] - 1]
+      }, #e6e6e6)`
+      grid.style.color = "#fff"
+      grid.innerText = this.board[x][y]
+      if (this.board[x][y] == 0) {
+        grid.style.background = ""
+        grid.style.color = ""
+        grid.innerText = "+"
+      }
+    }
+  }
 }
