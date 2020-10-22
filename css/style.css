@@ -12,8 +12,67 @@ body {
   place-items: center;
 }
 
+#form input {
+  margin-bottom: 16px;
+  padding: 6px;
+  width: 100%;
+}
+
 #indicator {
 	font-weight: 600;
+}
+
+#score div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 6px;
+}
+
+#score div:first-child {
+  margin-top: 0;
+}
+
+#score div > * {
+  padding: 0 6px;
+}
+
+#score div > *:first-child {
+  margin-right: -1px;
+  border-radius: 4px 0 0 4px;
+}
+
+#score div > *:last-child {
+  margin-left: -1px;
+  border-radius: 0 4px 4px 0;
+}
+
+.hidden {
+  display: none;
+  height: 0;
+}
+
+.visible {
+  display: block;
+  height: auto;
+}
+
+.score__label {
+  display: inline-block;
+  height: 20px;
+  min-width: 16px;
+  padding: 4px 5px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+  text-align: center;
+  text-shadow: 0 1px 0 #ffffff;
+  background-color: #eeeeee;
+  border: 1px solid #ccc;
+}
+
+.score__value {
+  background-color: #ffffff;
 }
 
 .container {
@@ -47,7 +106,7 @@ body {
   cursor: default;
 }
 
-.reset {
+.button {
 	display: block;
 	margin-top: 20px;
 	padding: 6px 10px;
@@ -65,4 +124,8 @@ body {
 	background-repeat: repeat-x;
 	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 	cursor: pointer;
+}
+
+.settings {
+  margin-top: 10px;
 }

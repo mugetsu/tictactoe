@@ -11,6 +11,7 @@ class TicTacToe {
     this.turn = 1 // indicate who's turn is it
     this.playable = true // if game is playable
     this.currentMoves = 0 // moves made
+    this.scores = this.scoreBoard.call(this, this.args.players) // create score board
     this.board // grid container
     this.boardSize
     this.totalMoves // available moves
@@ -18,7 +19,13 @@ class TicTacToe {
     this.indicatorHandler
     this.playerColors = ['red', 'blue', 'green', 'pink', 'cyan', 'black', 'orange', 'purple']
     this.initGame()
-    this.buildBoard()
+
+    // Check if playable
+    if (this.playable) {
+      this.buildBoard()
+    } else {
+      return false
+    }
   }
 }
 
@@ -41,18 +48,21 @@ TicTacToe.prototype.initGame = function () {
     this.board = arr.slice(0)
     this.totalMoves = size * size
   } else {
-    console.log("Invalid board dimension.")
+    this.playable = false
+    alert("Invalid board dimension.")
     return
   }
   if (movesToWin > size) {
-    console.log("movesToWin must not be lower than boardSize.")
+    this.playable = false
+    alert("movesToWin must not be lower than boardSize.")
     return
   } else {
     this.movesToWin = movesToWin
   }
 
   if (players > size) {
-    console.log(
+    this.playable = false
+    alert(
       `Players ${
         size + 1
       } and above does not have any chances to win! Max players: ${size}`
@@ -68,7 +78,7 @@ TicTacToe.prototype.buildBoard = function () {
 
   // Grid container
   container = document.createElement("div")
-  container.id = "tic-tac-toe"
+  container.id = "tic_tac_toe"
   container.classList.add("container")
   container.style.width = `${this.boardSize * 100 + 30}px`
 
@@ -76,6 +86,24 @@ TicTacToe.prototype.buildBoard = function () {
   const titleContainer = document.createElement('h1')
   titleContainer.innerText = this.args.title
   container.appendChild(titleContainer)
+
+  //creates score board
+	const scoreContainer = document.createElement('div')
+	scoreContainer.id = 'score'
+	let playerScores = total => {
+		let template = ''
+		for (let index = 0; index < total; index++) {
+			const playerId = index + 1
+			template += `<div>
+				<span class="score__label">Player ${playerId} won</span>
+				<strong id="score_${playerId}" class="score__label score__value">0</strong>
+				<span id="score_${playerId}__text" class="score__label">time</span>
+			</div>`
+		}
+		return template
+	}
+	scoreContainer.innerHTML = playerScores(this.args.players)
+	container.appendChild(scoreContainer)
   
   // Player indicator text
   const indicatorContainer = document.createElement('p')
@@ -103,9 +131,17 @@ TicTacToe.prototype.buildBoard = function () {
   const resetButton = document.createElement("button")
   const resetText = document.createTextNode("Restart")
   resetButton.appendChild(resetText)
-  resetButton.className = "reset"
+  resetButton.className = "button reset"
   resetButton.onclick = (() => this.reset.call(this)).bind(resetButton)
   container.appendChild(resetButton)
+
+  // Settings button
+  const settingsButton = document.createElement("button")
+  const settingsText = document.createTextNode("Settings")
+  settingsButton.appendChild(settingsText)
+  settingsButton.className = "button settings"
+  settingsButton.onclick = (() => this.settings.call(this)).bind(settingsButton)
+  container.appendChild(settingsButton)
 
   // Reference indicator
   this.indicatorHandler = document.getElementById('indicator')
@@ -135,6 +171,13 @@ TicTacToe.prototype.reset = function () {
   this.indicatorHandler.innerText = `Player ${this.turn}'s turn!`
   this.initGame()
   this.updateBoard()
+}
+
+// Change settings
+TicTacToe.prototype.settings = function () {
+  const container = document.getElementById('tic_tac_toe')
+  document.getElementById('form').classList.remove('hidden')
+  container.parentNode.removeChild(container)
 }
 
 // Update board
@@ -247,9 +290,22 @@ TicTacToe.prototype.endGame = function (player) {
     if (player === -1) {
       alert("It's a draw!")
     } else {
+      this.scores[player] = (this.scores[player] + 1)
+      document.getElementById(`score_${player}`).innerText = this.scores[player]
+      document.getElementById(`score_${player}__text`).innerText = this.scores[player] > 1 ? 'times' : 'time'
       alert(`Player ${player} won!`)
     }
   } else {
     alert("Error! Tried to end game with no matches!")
   }
+}
+
+// Generate score board
+TicTacToe.prototype.scoreBoard = function (total) {
+  let val = {}
+  for (let index = 0; index < total; index++) {
+    const playerId = index + 1
+    val[playerId] = 0
+  }
+  return val
 }

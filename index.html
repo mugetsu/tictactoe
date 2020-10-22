@@ -6,9 +6,34 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
+    <form id="form">
+      <div>
+        <h1>Create Game</h1>
+      </div>
+      <div>
+        <input id="title" type="text" placeholder="Game Title" />
+      </div>
+      <div>
+        <input id="players" type="number" placeholder="Player Count" />
+      </div>
+      <div>
+        <input id="size" type="number" placeholder="Board Size (Odd Number)" />
+      </div>
+      <button type="submit" class="button">Create</button>
+    </form>
     <script src="js/index.js"></script>
     <script>
-      const TicTac = new TicTacToe()
+      const startGame = (e) => {
+        const game = new TicTacToe({
+          title: title.value,
+          movesToWin: size.value,
+          boardSize: size.value,
+          players: players.value
+        })
+        if (game.playable) e.target.classList.add('hidden')
+        e.preventDefault()        
+      }
+      form.onsubmit = startGame
     </script>
   </body>
 </html>
