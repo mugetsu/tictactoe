@@ -116,7 +116,9 @@ TicTacToe.prototype.toggle = function (x, y) {
   if (this.turn != 0 && this.playable == true && this.board[x][y] == 0) {
     this.board[x][y] = this.turn
     this.currentMoves++
+    this.checkCombinations()
     this.updateBoard()
+    this.switchTurns()
     this.indicatorHandler.innerText = `Player ${this.turn}'s turn!`
   } else {
     this.indicatorHandler.innerText = this.playable
@@ -152,5 +154,102 @@ TicTacToe.prototype.updateBoard = function () {
         grid.innerText = "+"
       }
     }
+  }
+}
+
+// Check winning combinations
+TicTacToe.prototype.checkCombinations = function () {
+  let player = this.turn
+  let movesToWin = this.movesToWin
+  let x, y, z, matches
+
+  if (this.playable === true && this.currentMoves != this.totalMoves) {
+    // Horizontal match
+    for (x = 0; x < this.boardSize; x++) {
+      matches = 0
+      for (y = 0; y < this.boardSize; y++) {
+        if (this.board[x][y] === player) {
+          matches++
+          if (matches >= movesToWin) {
+            this.playable = false
+            this.endGame(player)
+          }
+        } else {
+          matches = 0
+        }
+      }
+    }
+    // Vertical match
+    for (x = 0; x < this.boardSize; x++) {
+      matches = 0
+      for (y = 0; y < this.boardSize; y++) {
+        if (this.board[y][x] === player) {
+          matches++
+          if (matches >= movesToWin) {
+            this.playable = false
+            this.endGame(player)
+          }
+        } else {
+          matches = 0
+        }
+      }
+    }
+    // Top Left to Bottom Right match
+    for (x = 0; x < this.boardSize - movesToWin + 1; x++) {
+      for (y = 0; y < this.boardSize - movesToWin + 1; y++) {
+        matches = 0
+        for (z = 0; z < movesToWin; z++) {
+          if (this.board[x + z][y + z] == player) {
+            matches++
+            if (matches >= movesToWin) {
+              this.playable = false
+              this.endGame(player)
+            }
+          }
+        }
+      }
+    }
+    // Top Right to Bottom Left match
+    for (x = 0; x < this.boardSize - movesToWin + 1; x++) {
+      for (y = this.boardSize - 1; y > this.boardSize - movesToWin - 1; y--) {
+        matches = 0
+        for (z = 0; z < movesToWin; z++) {
+          if (this.board[x + z][y - z] == player) {
+            matches++
+            if (matches >= movesToWin) {
+              this.playable = false
+              this.endGame(player)
+            }
+          }
+        }
+      }
+    }
+  } else if (this.currentMoves === this.totalMoves) {
+    this.playable = false
+    this.endGame(-1)
+  } else {
+    alert("Unexpected error occured.")
+  }
+}
+
+// Toggle between user turns
+TicTacToe.prototype.switchTurns = function () {
+  if (this.turn < this.args.players) {
+    this.turn++
+  } else {
+    this.turn = 1
+  }
+}
+
+// End game
+TicTacToe.prototype.endGame = function (player) {
+  if (this.playable === false) {
+    if (player === -1) {
+      alert("It's a draw!")
+    } else {
+      alert(`Player ${player} won!`)
+    }
+  } else {
+    alert("Error! Tried to end game with no matches!")
   }
 }
